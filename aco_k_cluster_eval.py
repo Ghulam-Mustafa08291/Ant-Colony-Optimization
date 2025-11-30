@@ -19,6 +19,8 @@ def load_graph_data(filename):
         return None, None, None, None
 
     nodes_list = list(G.nodes())
+    node_to_index = {node_id: idx for idx, node_id in enumerate(nodes_list)}  # MAPS INDEX TO NODE NUM (so i can use same start and end node as dani when comparing our algos)
+
     edges_dict = {}
     
     # We also need a list of "Danger Points" for K-Means
@@ -51,7 +53,7 @@ def load_graph_data(filename):
                 pass # Skip if no coordinates found
 
     print(f"Graph loaded. Found {len(danger_points)} high-risk road segments.")
-    return nodes_list, edges_dict, np.array(danger_points), G
+    return nodes_list, edges_dict, np.array(danger_points), G,node_to_index
 
 # --- 2. K-MEANS HOTSPOT GENERATION ---
 
@@ -157,15 +159,21 @@ def run_aco(start, end, nodes, edges, weights):
 # --- 4. MAIN EXECUTION ---
 
 if __name__ == "__main__":
-    NODES, EDGES, DANGER_POINTS, G = load_graph_data("karachi_clifton_roads_with_safety.graphml") # <--- YOUR FILE
+    NODES, EDGES, DANGER_POINTS, G ,NODES_TO_INDEX= load_graph_data("karachi_clifton_roads_with_safety.graphml") # <--- YOUR FILE
     
     if NODES:
         # Generate Hotspots
         HOTSPOTS = generate_hotspots(DANGER_POINTS)
         print(f"Identified Hotspot Centers at coordinates: \n{HOTSPOTS}")
 
-        start = NODES [0]
-        end = NODES[11] if len(NODES) > 20 else NODES[-1]
+        start_node_id=str(286706786)
+        end_node_id=str(194416718)
+
+        start_idx = NODES_TO_INDEX[start_node_id]
+        end_idx = NODES_TO_INDEX[end_node_id]
+
+        start = NODES [start_idx]
+        end = NODES[end_idx] if len(NODES) > 20 else NODES[-1]
         print(f"\nPlanning route from {start} to {end}...")
 
         # --- SCENARIO 1: The "Shortest" Path (Dijkstra behavior) ---

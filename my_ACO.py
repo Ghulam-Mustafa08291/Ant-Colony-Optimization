@@ -423,6 +423,7 @@ if __name__ == "__main__":
     # For a real demo, you should specify actual node IDs you're interested in
     start = NODES[0]
     end = NODES[min(100, len(NODES)-1)]  # Pick a node that's not too far in the list
+    # end = NODES[1]
     
     print(f"\n" + "="*60)
     print(f"Running ACO on Karachi Road Network")
